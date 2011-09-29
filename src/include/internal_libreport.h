@@ -636,6 +636,7 @@ GList *kernel_tainted_long(unsigned tainted);
 #define FILENAME_REPORTED_TO  "reported_to"
 #define FILENAME_EVENT_LOG    "event_log"
 #define FILENAME_NOT_REPORTABLE "not-reportable"
+#define FILENAME_CANONICAL_BACKTRACE "canonical_backtrace"
 
 // Not stored as files, added "on the fly":
 #define CD_DUMPDIR            "Directory"
