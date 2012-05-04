@@ -693,6 +693,18 @@ static void event_rb_was_toggled(GtkButton *button, gpointer user_data)
     }
 }
 
+static int check_event_config(const char *event_name)
+{
+    GHashTable *errors = validate_event(event_name);
+    if (errors != NULL)
+    {
+        g_hash_table_unref(errors);
+        show_event_opt_error_dialog(event_name);
+        return 1;
+    }
+    return 0;
+}
+
 /* event_name contains "EVENT1\nEVENT2\nEVENT3\n".
  * Add new {radio/check}buttons to GtkBox for each EVENTn (type depends on bool radio).
  * Remember them in GList **p_event_list (list of event_gui_data_t's).
@@ -2074,8 +2086,15 @@ static gint select_next_page_no(gint current_page_no, gpointer data)
              * We don't remove the list element, because GTK calls select_next_page_no()
              * spuriously (for example, it calls it twice for first page).
              */
+
+            if (check_event_config(g_event_selected) != 0)
+            {
+                goto again;
+            }
+
             current_page_no = pages[PAGENO_EVENT_SELECTOR].page_no + 1;
             goto event_was_selected;
+
         }
     }
 
@@ -2088,6 +2107,7 @@ static gint select_next_page_no(gint current_page_no, gpointer data)
             current_page_no = pages[PAGENO_EVENT_SELECTOR].page_no - 1;
             goto again;
         }
+
         event_config_t *cfg = get_event_config(g_event_selected);
         if (cfg && cfg->ec_skip_review)
         {
