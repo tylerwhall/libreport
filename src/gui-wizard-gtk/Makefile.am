@@ -1,5 +1,5 @@
 # report-gtk binary
-bin_PROGRAMS = report-gtk
+bin_PROGRAMS = report-gtk workflow-test
 
 report_gtk_SOURCES = \
     wizard.h wizard.c \
@@ -31,6 +31,11 @@ report_gtk_LDADD = \
     ../gtk-helpers/libreport-gtk.la \
     $(GLIB_LIBS) \
     $(GTK_LIBS)
+
+workflow_test_SOURCES = workflow_test.c
+workflow_test_CFLAGS = $(report_gtk_CFLAGS)
+workflow_test_LDADD = $(report_gtk_LDADD)
+
 
 # we don't want to install it, just make it part of tarball
 # created by make dist

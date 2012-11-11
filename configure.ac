@@ -20,7 +20,7 @@ AC_INIT([libreport],
 	[crash-catcher@fedorahosted.org])
 
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall foreign])
 # Support silent build rules. Disable by either passing --disable-silent-rules
 # to ./configure or passing V=1 to make
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
@@ -175,6 +175,7 @@ VAR_RUN='${localstatedir}/run'
 PLUGINS_CONF_DIR='${sysconfdir}/${PACKAGE_NAME}/plugins'
 REPORT_PLUGINS_CONF_DIR='${sysconfdir}/libreport/plugins'
 EVENTS_DIR='${sysconfdir}/${PACKAGE_NAME}/events'
+WORKFLOWS_DIR='${sysconfdir}/${PACKAGE_NAME}/workflows'
 EVENTS_CONF_DIR='${sysconfdir}/${PACKAGE_NAME}/events.d'
 PLUGINS_LIB_DIR='${libdir}/${PACKAGE_NAME}'
 LIBEXEC_DIR='${libexecdir}'
@@ -192,6 +193,7 @@ AC_SUBST(PLUGINS_CONF_DIR)
 AC_SUBST(REPORT_PLUGINS_CONF_DIR)
 AC_SUBST(EVENTS_CONF_DIR)
 AC_SUBST(EVENTS_DIR)
+AC_SUBST(WORKFLOWS_DIR)
 AC_SUBST(PLUGINS_LIB_DIR)
 AC_SUBST(DEBUG_DUMPS_DIR)
 AC_SUBST(LIBEXEC_DIR)

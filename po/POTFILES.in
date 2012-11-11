@@ -36,5 +36,6 @@ src/plugins/reporter-rhtsupport.c
 src/plugins/reporter-rhtsupport-parse.c
 src/plugins/reporter-upload.c
 src/plugins/rhbz.c
+src/plugins/workflow_Fedora.xml.in
 src/report-newt/report-newt.c
 src/plugins/ureport.c

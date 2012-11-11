@@ -283,6 +283,14 @@ static void dehydrate_config_dialog()
         g_list_foreach(option_widget_list, &save_value_from_widget, NULL);
 }
 
+/*
+GtkWidget *create_event_config_dialog(event_name)
+{
+
+    return
+}
+*/
+
 int show_event_config_dialog(const char *event_name, GtkWindow *parent)
 {
     if (option_widget_list != NULL)
@@ -396,31 +404,8 @@ int show_event_config_dialog(const char *event_name, GtkWindow *parent)
     return result;
 }
 
-void show_events_list_dialog(GtkWindow *parent)
+GtkWidget *create_event_list_config_dialog()
 {
-    /*remove this line if we want to reload the config
-     *everytime we show the config dialog
-     */
-    if (g_event_config_list == NULL)
-    {
-        load_event_config_data();
-        load_event_config_data_from_user_storage(g_event_config_list);
-    }
-
-    GtkWidget *event_list_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    g_event_list_window = (GtkWindow*)event_list_window;
-    gtk_window_set_title(g_event_list_window, _("Event Configuration"));
-    gtk_window_set_default_size(g_event_list_window, 450, 400);
-    gtk_window_set_position(g_event_list_window, parent ? GTK_WIN_POS_CENTER_ON_PARENT : GTK_WIN_POS_CENTER);
-    if (parent != NULL)
-    {
-        gtk_window_set_transient_for(g_event_list_window, parent);
-        // modal = parent window can't steal focus
-        gtk_window_set_modal(g_event_list_window, true);
-        gtk_window_set_icon_name(g_event_list_window,
-            gtk_window_get_icon_name(parent));
-    }
-
     GtkWidget *main_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     GtkWidget *events_scroll = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(events_scroll),
@@ -482,6 +467,36 @@ void show_events_list_dialog(GtkWindow *parent)
 
     gtk_box_pack_start(GTK_BOX(main_vbox), events_scroll, true, true, 10);
     gtk_box_pack_start(GTK_BOX(main_vbox), btnbox, false, false, 0);
+
+    return main_vbox;
+}
+
+void show_events_list_dialog(GtkWindow *parent)
+{
+    /*remove this line if we want to reload the config
+     *everytime we show the config dialog
+     */
+    if (g_event_config_list == NULL)
+    {
+        load_event_config_data();
+        load_event_config_data_from_user_storage(g_event_config_list);
+    }
+
+    GtkWidget *event_list_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    g_event_list_window = (GtkWindow*)event_list_window;
+    gtk_window_set_title(g_event_list_window, _("Event Configuration"));
+    gtk_window_set_default_size(g_event_list_window, 450, 400);
+    gtk_window_set_position(g_event_list_window, parent ? GTK_WIN_POS_CENTER_ON_PARENT : GTK_WIN_POS_CENTER);
+    if (parent != NULL)
+    {
+        gtk_window_set_transient_for(g_event_list_window, parent);
+        // modal = parent window can't steal focus
+        gtk_window_set_modal(g_event_list_window, true);
+        gtk_window_set_icon_name(g_event_list_window,
+            gtk_window_get_icon_name(parent));
+    }
+
+    GtkWidget *main_vbox = create_event_list_config_dialog();
 
     gtk_container_add(GTK_CONTAINER(event_list_window), main_vbox);
 

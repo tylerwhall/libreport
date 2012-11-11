@@ -35,6 +35,7 @@ dist_reportpluginsconf_DATA = $(reporters_plugin_conf) \
     mailx.conf
 
 eventsdir = $(EVENTS_DIR)
+workflowsdir = $(WORKFLOWS_DIR)
 
 reporters_events =
 if BUILD_BUGZILLA
@@ -52,6 +53,9 @@ dist_events_DATA = $(reporters_events) \
     report_RHTSupport.xml \
     report_Kerneloops.xml \
     report_Uploader.xml
+
+dist_workflows_DATA = \
+    workflow_Fedora.xml
 
 @INTLTOOL_XML_RULE@
 
@@ -79,7 +83,8 @@ EXTRA_DIST = $(reporters_extra_dist) \
     report_Mailx.xml.in \
     report_RHTSupport.xml.in \
     report_Kerneloops.xml.in \
-    report_Uploader.xml.in
+    report_Uploader.xml.in \
+    workflow_Fedora.xml.in
 
 $(DESTDIR)/$(DEBUG_INFO_DIR):
 	$(mkdir_p) '$@'

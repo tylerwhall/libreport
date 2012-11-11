@@ -200,6 +200,14 @@ Requires: %{name}-plugin-rhtsupport = %{version}-%{release}
 %description compat
 Provides 'report' command-line tool.
 
+%package fedora-config
+Group: System Environment/Libraries
+Summary: Fedora specific configuration files
+
+%description fedora-config
+This package provides the preconfigured workflow for reporting bugs using the
+Fedora infrastructure. It's (almost) fully automatic and should be easy to use.
+
 %package plugin-reportuploader
 Summary: %{name}'s reportuploader plugin
 Group: System Environment/Libraries
@@ -289,6 +297,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_includedir}/libreport/problem_data.h
 %{_includedir}/libreport/report.h
 %{_includedir}/libreport/run_event.h
+%{_includedir}/libreport/workflow.h
 %{_includedir}/libreport/file_obj.h
 # Private api headers:
 %{_includedir}/libreport/internal_abrt_dbus.h
@@ -392,6 +401,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/reporter-upload
 %{_sysconfdir}/libreport/events/report_Uploader.xml
 %config(noreplace) %{_sysconfdir}/libreport/events.d/uploader_event.conf
+
+%files fedora-config
+%defattr(-,root,root,-)
+%{_sysconfdir}/libreport/workflows/workflow_Fedora.xml
+%{_bindir}/workflow-test
 
 %changelog
 * Wed Nov 14 2012 Jakub Filak <jfilak@redhat.com> 2.0.19-1

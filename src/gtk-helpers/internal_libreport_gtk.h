@@ -50,6 +50,9 @@ void  save_event_config_data_to_user_storage(const char *event_name,
 #define show_event_config_dialog libreport_show_event_config_dialog
 int show_event_config_dialog(const char *event_name, GtkWindow *parent);
 
+#define show_workflow_list_dialog libreport_show_workflow_list_dialog
+void show_workflow_list_dialog(GtkWindow *parent);
+
 char * tag_url(const char* line, const char* prefix);
 
 #define url_token libreport_url_token

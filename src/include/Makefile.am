@@ -7,6 +7,7 @@ libreport_include_HEADERS = \
     report.h \
     run_event.h \
     libreport_curl.h \
+    workflow.h \
     \
     file_obj.h \
     internal_libreport.h \
