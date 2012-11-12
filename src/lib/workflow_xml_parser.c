@@ -96,8 +96,23 @@ static void text(GMarkupParseContext *context,
         char *subevent_filename = xasprintf("../plugins/%s.xml", text);
 
         load_event_description_from_file(ec, subevent_filename);
-        workflow->events = g_list_append(workflow->events, ec);
+        //HACK: need to make ec = NULL if the loading fails
+        if (ec_get_screen_name(ec))
+        {
+            workflow->events = g_list_append(workflow->events, ec);
+            g_print("added to ev list: '%s'\n", ec_get_screen_name(ec));
+        }
         free(subevent_filename);
+    }
+
+    if(strcmp(inner_element, NAME_ELEMENT) == 0)
+    {
+        workflow->info->screen_name = xstrdup(text);
+    }
+
+    if(strcmp(inner_element, DESCRIPTION_ELEMENT) == 0)
+    {
+        workflow->info->description = xstrdup(text);
     }
 }
 

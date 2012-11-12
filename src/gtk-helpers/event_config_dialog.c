@@ -230,25 +230,10 @@ static void on_event_row_changed_cb(GtkTreeView *treeview, gpointer user_data)
     }
 }
 
-static void add_event_to_liststore(gpointer key, gpointer value, gpointer user_data)
+static void add_event_to_liststore_wrap(gpointer key, gpointer value, gpointer user_data)
 {
-    GtkListStore *events_list_store = (GtkListStore *)user_data;
-    event_config_t *ec = (event_config_t *)value;
-
-    char *event_label;
-    if (ec->screen_name != NULL && ec->description != NULL)
-        event_label = xasprintf("<b>%s</b>\n%s", ec->screen_name, ec->description);
-    else
-        //if event has no xml description
-        event_label = xasprintf("<b>%s</b>\nNo description available", key);
-
-    GtkTreeIter iter;
-    gtk_list_store_append(events_list_store, &iter);
-    gtk_list_store_set(events_list_store, &iter,
-                      COLUMN_EVENT_UINAME, event_label,
-                      COLUMN_EVENT_NAME, key,
-                      -1);
-    free(event_label);
+    config_item_info_t *info = ec_get_config_info((event_config_t *)value);
+    add_item_to_config_liststore(key, info, user_data);
 }
 
 static void save_value_from_widget(gpointer data, gpointer user_data)
@@ -283,51 +268,12 @@ static void dehydrate_config_dialog()
         g_list_foreach(option_widget_list, &save_value_from_widget, NULL);
 }
 
-/*
-GtkWidget *create_event_config_dialog(event_name)
+GtkWidget *create_event_config_dialog_content(event_config_t *event, GtkWidget *content)
 {
+    if (content == NULL)
+        content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
-    return
-}
-*/
-
-int show_event_config_dialog(const char *event_name, GtkWindow *parent)
-{
-    if (option_widget_list != NULL)
-    {
-        g_list_free(option_widget_list);
-        option_widget_list = NULL;
-    }
-
-    event_config_t *event = get_event_config(event_name);
-
-    GtkWindow *parent_window = parent ? parent : g_event_list_window;
-
-    GtkWidget *dialog = gtk_dialog_new_with_buttons(
-                        /*title:*/ event->screen_name ? event->screen_name : event_name,
-                        parent_window,
-                        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                        GTK_STOCK_CANCEL,
-                        GTK_RESPONSE_CANCEL,
-                        GTK_STOCK_OK,
-                        GTK_RESPONSE_APPLY,
-                        NULL);
-
-    /* Allow resize?
-     * W/o resize, e.g. upload configuration hint looks awfully
-     * line wrapped.
-     * With resize, there are some somewhat not nice effects:
-     * for one, opening an expander will enlarge window,
-     * but won't contract it back when expander is closed.
-     */
-    gtk_window_set_resizable(GTK_WINDOW(dialog), true);
-    gtk_window_set_default_size(GTK_WINDOW(dialog), 450, -1);
-
-    if (parent_window != NULL)
-    {
-        gtk_window_set_icon_name(GTK_WINDOW(dialog),
-                gtk_window_get_icon_name(parent_window));
-    }
+    //event_config_t *event = get_event_config(event_name);
 
     GtkWidget *option_table = gtk_grid_new();
     gtk_grid_set_row_homogeneous(GTK_GRID(option_table), FALSE);
@@ -367,7 +313,6 @@ int show_event_config_dialog(const char *event_name, GtkWindow *parent)
         g_signal_connect(pass_store_cb, "toggled", G_CALLBACK(on_show_pass_store_cb), NULL);
     }
 
-    GtkWidget *content = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
     gtk_box_pack_start(GTK_BOX(content), option_table, false, false, 20);
 
     /* add the adv_option_table to the dialog only if there is some adv option */
@@ -386,6 +331,52 @@ int show_event_config_dialog(const char *event_name, GtkWindow *parent)
         gtk_widget_modify_fg(keyring_warn_lbl, GTK_STATE_NORMAL, &red);
         gtk_box_pack_start(GTK_BOX(content), keyring_warn_lbl, false, false, 0);
     }
+
+    return content;
+}
+
+int show_event_config_dialog(const char *event_name, GtkWindow *parent)
+{
+    if (option_widget_list != NULL)
+    {
+        g_list_free(option_widget_list);
+        option_widget_list = NULL;
+    }
+
+    event_config_t *event = get_event_config(event_name);
+
+    GtkWindow *parent_window = parent ? parent : g_event_list_window;
+
+    GtkWidget *dialog = gtk_dialog_new_with_buttons(
+                        /*title:*/ec_get_screen_name(event) ? ec_get_screen_name(event) : event_name,
+                        parent_window,
+                        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                        GTK_STOCK_CANCEL,
+                        GTK_RESPONSE_CANCEL,
+                        GTK_STOCK_OK,
+                        GTK_RESPONSE_APPLY,
+                        NULL);
+
+    /* Allow resize?
+     * W/o resize, e.g. upload configuration hint looks awfully
+     * line wrapped.
+     * With resize, there are some somewhat not nice effects:
+     * for one, opening an expander will enlarge window,
+     * but won't contract it back when expander is closed.
+     */
+    gtk_window_set_resizable(GTK_WINDOW(dialog), true);
+    gtk_window_set_default_size(GTK_WINDOW(dialog), 450, -1);
+
+    if (parent_window != NULL)
+    {
+        gtk_window_set_icon_name(GTK_WINDOW(dialog),
+                gtk_window_get_icon_name(parent_window));
+    }
+
+    GtkWidget *content = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+    g_print("asdasd\n");
+    content = create_event_config_dialog_content(event, content);
+    g_print("asdasssssd\n");
 
     gtk_widget_show_all(content);
 
@@ -444,7 +435,7 @@ GtkWidget *create_event_list_config_dialog()
     gtk_tree_view_set_model(GTK_TREE_VIEW(events_tv), GTK_TREE_MODEL(events_list_store));
 
     g_hash_table_foreach(g_event_config_list,
-                        &add_event_to_liststore,
+                        &add_event_to_liststore_wrap,
                         events_list_store);
 //TODO: can unref events_list_store? treeview holds one ref.
 

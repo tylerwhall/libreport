@@ -50,8 +50,13 @@ void  save_event_config_data_to_user_storage(const char *event_name,
 #define show_event_config_dialog libreport_show_event_config_dialog
 int show_event_config_dialog(const char *event_name, GtkWindow *parent);
 
+#define create_event_config_dialog_content libreport_create_event_config_dialog_content
+GtkWidget *create_event_config_dialog_content(event_config_t *event, GtkWidget *content);
+
 #define show_workflow_list_dialog libreport_show_workflow_list_dialog
 void show_workflow_list_dialog(GtkWindow *parent);
+
+void add_item_to_config_liststore(gpointer key, gpointer value, gpointer user_data);
 
 char * tag_url(const char* line, const char* prefix);
 

@@ -21,20 +21,22 @@
 
 #include <glib.h>
 #include "event_config.h"
+#include "config_item_info.h"
 
 typedef struct
 {
-    char *screen_name;
-    char *description;
+    config_item_info_t *info;
 
-    GList *events;
+    GList *events; //list of event_option_t
 } workflow_t;
 
 extern GHashTable *g_workflow_list;
 
 workflow_t *new_workflow(void);
+workflow_t *get_workflow(const char *name);
 void free_workflow(workflow_t *w);
 
 void load_workflow_description_from_file(workflow_t *w, const char *filename);
+config_item_info_t *workflow_get_config_info(workflow_t *w);
 
 #endif

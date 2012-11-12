@@ -51,7 +51,8 @@ libreport_la_SOURCES = \
     file_list.c \
     file_obj.c \
     workflow.c \
-    workflow_xml_parser.c
+    workflow_xml_parser.c \
+    config_item_info.c
 libreport_la_CPPFLAGS = \
     -I$(srcdir)/../include \
     -DLOCALSTATEDIR='"$(localstatedir)"' \

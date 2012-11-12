@@ -26,6 +26,7 @@ GHashTable *g_workflow_list;
 workflow_t *new_workflow(void)
 {
     workflow_t *w = xzalloc(sizeof(event_config_t));
+    w->info = new_config_info();
     return w;
 }
 
@@ -34,13 +35,8 @@ void free_workflow(workflow_t *w)
     if (!w)
         return;
 
-    free(w->screen_name);
-    free(w->description);
-    GList *event;
-    for (event = w->events; event; event = g_list_next(event))
-        free_event_config((event_config_t *)event);
-
-    g_list_free(w->events);
+    free_config_info(w->info);
+    g_list_free_full(w->events, (GDestroyNotify)free_event_config);
     free(w);
 }
 
@@ -94,4 +90,9 @@ void load_workflow_config_data(const char* path)
         workflow_files = g_list_next(workflow_files);
     }
     free_file_list(workflow_files);
+}
+
+config_item_info_t *workflow_get_config_info(workflow_t *w)
+{
+    return w->info;
 }

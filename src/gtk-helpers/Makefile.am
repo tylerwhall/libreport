@@ -13,7 +13,8 @@ libreport_gtk_la_SOURCES = \
     secrets.c \
     hyperlinks.c \
     autowrapped_label.c \
-    workflow_config_dialog.c
+    workflow_config_dialog.c \
+    config_dialog.c
 
 libreport_gtk_la_CPPFLAGS = \
     -I$(srcdir)/../include \
