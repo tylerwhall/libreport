@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     GtkWindow *window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
     //show_events_list_dialog(window);
 
-    workflow_t *w = new_workflow();
+    //workflow_t *w = new_workflow();
 
     //load_workflow_description_from_file(w, "../plugins/workflow_Fedora.xml");
     show_workflow_list_dialog(window);

@@ -463,6 +463,7 @@ static void error(GMarkupParseContext *context,
 
 void load_event_description_from_file(event_config_t *event_config, const char* filename)
 {
+    VERB1 log("loading event: '%s'", filename);
     struct my_parse_data parse_data = { event_config, NULL, NULL, NULL };
     parse_data.cur_locale = setlocale(LC_ALL, NULL);
 

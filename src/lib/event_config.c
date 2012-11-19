@@ -39,6 +39,11 @@ config_item_info_t *ec_get_config_info(event_config_t * ec)
     return ec->info;
 }
 
+void ec_set_name(event_config_t *ec, const char *name)
+{
+    ci_set_name(ec->info, name);
+}
+
 void ec_set_screen_name(event_config_t *ec, const char *screen_name)
 {
     ci_set_screen_name(ec->info, screen_name);
@@ -57,6 +62,11 @@ const char *ec_get_description(event_config_t *ec)
 void ec_set_description(event_config_t *ec, const char *description)
 {
     ci_set_description(ec->info, description);
+}
+
+const char *ec_get_name(event_config_t *ec)
+{
+    return ci_get_name(ec->info);
 }
 
 const char *ec_get_long_desc(event_config_t *ec)

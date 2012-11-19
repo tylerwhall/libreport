@@ -222,6 +222,7 @@ AC_CONFIG_FILES([
 	src/report-newt/Makefile
 	src/plugins/Makefile
 	src/client-python/Makefile
+	src/workflows/Makefile
 	po/Makefile.in
 	doc/Makefile
 ])

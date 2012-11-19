@@ -63,7 +63,6 @@ GList *get_file_list(const char *path, const char *ext_filter)
             continue;
         }
 
-        g_print("%s\n", fullname);
         file_obj_t *file = new_file_obj(fullname, dent->d_name);
         files = g_list_prepend(files, file);
 

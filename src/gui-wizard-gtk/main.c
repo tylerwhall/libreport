@@ -130,6 +130,8 @@ int main(int argc, char **argv)
     for (GList *elem = g_auto_event_list; elem; elem = g_list_next(elem))
         elem->data = xstrdup((const char *)elem->data);
 
+    g_auto_event_list = NULL;
+
     export_abrt_envvars(opts & OPT_p);
 
     g_dump_dir_name = xstrdup(argv[0]);

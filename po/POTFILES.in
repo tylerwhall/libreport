@@ -9,6 +9,7 @@ src/gtk-helpers/event_config_dialog.c
 src/gtk-helpers/secrets.c
 src/gtk-helpers/workflow_config_dialog.c
 src/gui-wizard-gtk/main.c
+src/gtk-helpers/config_dialog.c
 src/gui-wizard-gtk/wizard.c
 src/gui-wizard-gtk/wizard.glade
 src/include/internal_libreport.h
@@ -37,6 +38,6 @@ src/plugins/reporter-rhtsupport.c
 src/plugins/reporter-rhtsupport-parse.c
 src/plugins/reporter-upload.c
 src/plugins/rhbz.c
-src/plugins/workflow_Fedora.xml.in
+src/workflows/report_Fedora.xml.in
 src/report-newt/report-newt.c
 src/plugins/ureport.c

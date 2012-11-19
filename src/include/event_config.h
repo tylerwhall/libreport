@@ -88,10 +88,12 @@ event_config_t *new_event_config(void);
 config_item_info_t *ec_get_config_info(event_config_t * ec);
 const char *ec_get_screen_name(event_config_t *ec);
 void ec_set_screen_name(event_config_t *ec, const char *screen_name);
+void ec_set_name(event_config_t *ec, const char *name);
 
 const char *ec_get_description(event_config_t *ec);
 void ec_set_description(event_config_t *ec, const char *description);
 
+const char *ec_get_name(event_config_t *ec);
 const char *ec_get_long_desc(event_config_t *ec);
 void ec_set_long_desc(event_config_t *ec, const char *long_desc);
 

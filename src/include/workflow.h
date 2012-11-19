@@ -38,5 +38,14 @@ void free_workflow(workflow_t *w);
 
 void load_workflow_description_from_file(workflow_t *w, const char *filename);
 config_item_info_t *workflow_get_config_info(workflow_t *w);
+const char *wf_get_name(workflow_t *w);
+GList *wf_get_event_list(workflow_t *w);
+const char *wf_get_screen_name(workflow_t *w);
+const char *wf_get_description(workflow_t *w);
+const char *wf_get_long_desc(workflow_t *w);
+
+void wf_set_name(workflow_t *w, const char* name);
+void wf_set_description(workflow_t *w, const char* description);
+void wf_set_long_desc(workflow_t *w, const char* long_desc);
 
 #endif

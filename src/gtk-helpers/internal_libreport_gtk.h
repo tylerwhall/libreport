@@ -56,7 +56,17 @@ GtkWidget *create_event_config_dialog_content(event_config_t *event, GtkWidget *
 #define show_workflow_list_dialog libreport_show_workflow_list_dialog
 void show_workflow_list_dialog(GtkWindow *parent);
 
+#define add_item_to_config_liststore libreport_add_item_to_config_liststore
 void add_item_to_config_liststore(gpointer key, gpointer value, gpointer user_data);
+
+#define create_config_list_dialog libreport_create_config_list_dialog
+GtkWidget *create_config_list_dialog(const char *column_label,
+                                    GHashTable *items,
+                                    GtkWindow *dialog,
+                                    GHFunc item_to_config_info,
+                                    GCallback on_config_cb,
+                                    GCallback on_row_change);
+GtkListStore *new_conf_liststore();
 
 char * tag_url(const char* line, const char* prefix);
 

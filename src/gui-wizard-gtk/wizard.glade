@@ -83,7 +83,7 @@
   <object class="GtkWindow" id="window1">
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkVBox" id="page_1">
+      <object class="GtkVBox" id="page_2">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="border_width">10</property>
@@ -177,7 +177,7 @@
   <object class="GtkWindow" id="window2">
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkVBox" id="page_2">
+      <object class="GtkVBox" id="page_1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="border_width">10</property>
@@ -198,7 +198,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkExpander" id="expander2">
+          <object class="GtkExpander" id="events_expander">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
@@ -211,7 +211,7 @@
               </object>
             </child>
             <child type="label">
-              <object class="GtkLabel" id="events_expander">
+              <object class="GtkLabel" id="events_exp_lbl">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">All options</property>

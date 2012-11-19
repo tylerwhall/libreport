@@ -105,6 +105,11 @@ static GtkImage *g_img_process_ok;
 
 static GtkWidget *g_top_most_window;
 
+static GtkExpander *g_all_events_expander;
+
+static void add_workflow_buttons(GtkBox *box, GHashTable *workflows, GCallback func);
+static void set_auto_event_chain(GtkButton *button, gpointer user_data);
+
 typedef struct
 {
     int page; //which tab in notepad
@@ -163,8 +168,8 @@ enum {
  * instead of strcmp.
  */
 static const gchar PAGE_SUMMARY[]        = "page_0";
-static const gchar PAGE_EVENT_SELECTOR[] = "page_2";
-static const gchar PAGE_EDIT_COMMENT[]   = "page_1";
+static const gchar PAGE_EVENT_SELECTOR[] = "page_1";
+static const gchar PAGE_EDIT_COMMENT[]   = "page_2";
 static const gchar PAGE_EDIT_ELEMENTS[]  = "page_3";
 static const gchar PAGE_REVIEW_DATA[]    = "page_4";
 static const gchar PAGE_EVENT_PROGRESS[] = "page_5";
@@ -972,30 +977,6 @@ static char *missing_items_in_comma_list(const char *input_item_list)
         result = NULL;
     }
     return result;
-}
-
-//static void event_rb_was_toggled(GtkButton *button, gpointer user_data)
-static void set_auto_event_chain(GtkButton *button, gpointer user_data)
-{
-    workflow_t *w = (workflow_t *)user_data;
-    config_item_info_t *info = workflow_get_config_info(w);
-    g_print("clicked at workflow '%s'\n", info->screen_name);
-}
-
-static void add_workflow_buttons(GtkBox *box, GHashTable *workflows, GCallback func)
-{
-    g_print("asads\n");
-    GList *keys = g_hash_table_get_keys(g_workflow_list);
-    while(keys)
-    {
-        workflow_t *workflow = g_hash_table_lookup(g_workflow_list, keys->data);
-        config_item_info_t *info = workflow_get_config_info(workflow);
-        g_print("adding %s\n", info->screen_name);
-        GtkWidget *button = gtk_button_new_with_label(info->screen_name);
-        g_signal_connect(button, "clicked", func, workflow);
-        gtk_box_pack_start(box, button, true, false, 0);
-        keys = g_list_next(keys);
-    }
 }
 
 static event_gui_data_t *add_event_buttons(GtkBox *box,
@@ -2370,14 +2351,14 @@ static void on_page_prepare(GtkNotebook *assistant, GtkWidget *page, gpointer us
 
     if (pages[PAGENO_SUMMARY].page_widget == page)
     {
-        if (!g_expert_mode)
-        {
+        //if (!g_expert_mode)
+        //{
             /* Skip intro screen */
             int n = select_next_page_no(pages[PAGENO_SUMMARY].page_no, NULL);
             VERB2 log("switching to page_no:%d", n);
             gtk_notebook_set_current_page(assistant, n);
             return;
-        }
+        //}
     }
 
     if (pages[PAGENO_EDIT_ELEMENTS].page_widget == page)
@@ -2426,6 +2407,48 @@ static void on_page_prepare(GtkNotebook *assistant, GtkWidget *page, gpointer us
             setup_and_start_event_run(g_event_selected);
         }
     }
+}
+
+//static void event_rb_was_toggled(GtkButton *button, gpointer user_data)
+static void set_auto_event_chain(GtkButton *button, gpointer user_data)
+{
+    //event is selected, so make sure the expert mode is disabled
+    g_expert_mode = false;
+
+    workflow_t *w = (workflow_t *)user_data;
+    config_item_info_t *info = workflow_get_config_info(w);
+    VERB1 log("selected workflow '%s'", info->screen_name);
+
+    GList *wf_event_list = wf_get_event_list(w);
+    while(wf_event_list)
+    {
+        g_auto_event_list = g_list_append(g_auto_event_list, xstrdup(ec_get_name(wf_event_list->data)));
+        wf_event_list = g_list_next(wf_event_list);
+    }
+
+    gint current_page_no = gtk_notebook_get_current_page(g_assistant);
+    gint next_page_no = select_next_page_no(current_page_no, NULL);
+
+    /* if pageno is not change 'switch-page' signal is not emitted */
+    if (current_page_no == next_page_no)
+        on_page_prepare(g_assistant, gtk_notebook_get_nth_page(g_assistant, next_page_no), NULL);
+    else
+        gtk_notebook_set_current_page(g_assistant, next_page_no);
+}
+
+static void add_workflow_buttons(GtkBox *box, GHashTable *workflows, GCallback func)
+{
+    GList *keys = g_hash_table_get_keys(g_workflow_list);
+    while(keys)
+    {
+        workflow_t *workflow = g_hash_table_lookup(g_workflow_list, keys->data);
+        config_item_info_t *info = workflow_get_config_info(workflow);
+        GtkWidget *button = gtk_button_new_with_label(info->screen_name);
+        g_signal_connect(button, "clicked", func, workflow);
+        gtk_box_pack_start(box, button, true, false, 0);
+        keys = g_list_next(keys);
+    }
+
 }
 
 static char *setup_next_processed_event(GList **events_list)
@@ -2477,6 +2500,11 @@ static gint select_next_page_no(gint current_page_no, gpointer data)
 
     if (pages[PAGENO_EVENT_SELECTOR].page_widget == page)
     {
+        if (!g_expert_mode && (g_auto_event_list == NULL))
+        {
+            return current_page_no; //stay here and let user select the workflow
+        }
+
         if (!g_expert_mode)
         {
             /* (note: this frees and sets to NULL g_event_selected) */
@@ -2928,6 +2956,7 @@ static void add_pages(void)
     g_spinner_event_log    = GTK_SPINNER(      gtk_builder_get_object(g_builder, "spinner_event_log"));
     g_img_process_ok       = GTK_IMAGE(      gtk_builder_get_object(g_builder, "img_process_ok"));
     g_img_process_fail     = GTK_IMAGE(      gtk_builder_get_object(g_builder, "img_process_fail"));
+    g_all_events_expander     = GTK_EXPANDER(      gtk_builder_get_object(g_builder, "events_expander"));
 
     gtk_widget_set_no_show_all(GTK_WIDGET(g_spinner_event_log), true);
 
@@ -3038,7 +3067,7 @@ void create_assistant(void)
 {
     g_loaded_texts = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 
-    g_expert_mode = !g_auto_event_list;
+    //g_expert_mode = !g_auto_event_list;
 
     g_monospace_font = pango_font_description_from_string("monospace");
     g_builder = gtk_builder_new();

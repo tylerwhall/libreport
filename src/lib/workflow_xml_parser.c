@@ -87,21 +87,20 @@ static void text(GMarkupParseContext *context,
     workflow_t *workflow = parse_data->workflow;
 
     const gchar *inner_element = g_markup_parse_context_get_element(context);
-    ///g_print(">>%s\n", inner_element);
 
     if(parse_data->in_event_list && strcmp(inner_element, EVENT_ELEMENT) == 0)
     {
-        g_print("'%s'\n", text);
         event_config_t *ec = new_event_config();
-        char *subevent_filename = xasprintf("../plugins/%s.xml", text);
+        char *subevent_filename = xasprintf(EVENTS_DIR"/%s.xml", text);
 
         load_event_description_from_file(ec, subevent_filename);
         //HACK: need to make ec = NULL if the loading fails
         if (ec_get_screen_name(ec))
         {
             workflow->events = g_list_append(workflow->events, ec);
-            g_print("added to ev list: '%s'\n", ec_get_screen_name(ec));
+            VERB2 log("added to ev list: '%s'", ec_get_screen_name(ec));
         }
+        ec_set_name(ec, text);
         free(subevent_filename);
     }
 
@@ -140,7 +139,7 @@ static void error(GMarkupParseContext *context,
 
 void load_workflow_description_from_file(workflow_t *workflow, const char* filename)
 {
-    g_print("filename: %s\n", filename);
+    VERB1 log("loading workflow: '%s'", filename);
     struct my_parse_data parse_data = { workflow, NULL, NULL, 0};
     parse_data.cur_locale = setlocale(LC_ALL, NULL);
 

@@ -405,7 +405,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files fedora-config
 %defattr(-,root,root,-)
-%{_sysconfdir}/libreport/workflows/workflow_Fedora.xml
+%{_sysconfdir}/libreport/workflows/report_Fedora.xml
+%{_sysconfdir}/libreport/workflows/report_fedora.conf
 %{_bindir}/workflow-test
 
 %changelog
