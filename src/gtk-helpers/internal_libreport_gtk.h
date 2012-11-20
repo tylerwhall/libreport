@@ -37,7 +37,7 @@ void show_events_list_dialog(GtkWindow *parent);
 bool is_event_config_user_storage_available();
 
 #define load_single_event_config_data_from_user_storage libreport_load_single_event_config_data_from_user_storage
-void load_single_event_config_data_from_user_storage(const char *event_name, event_config_t *config);
+void load_single_event_config_data_from_user_storage(event_config_t *config);
 
 #define load_event_config_data_from_user_storage libreport_load_event_config_data_from_user_storage
 void load_event_config_data_from_user_storage(GHashTable *event_config_list);

@@ -75,6 +75,16 @@ static void add_workflow_to_liststore(gpointer key, gpointer value, gpointer use
     add_item_to_config_liststore(dialog, info, user_data);
 }
 
+static void load_single_event_config_foreach(event_config_t *ec, gpointer user_data)
+{
+    load_single_event_config_data_from_user_storage(ec);
+}
+
+static void load_events_foreach_workflow(const char *name, workflow_t *workflow, gpointer user_data)
+{
+    g_list_foreach(wf_get_event_list(workflow), (GFunc)load_single_event_config_foreach, NULL);
+}
+
 void show_workflow_list_dialog(GtkWindow *parent)
 {
     g_parent_window = parent;
@@ -84,6 +94,8 @@ void show_workflow_list_dialog(GtkWindow *parent)
         VERB1 log("workflow list is empty - reloading");
         load_workflow_config_data(WORKFLOWS_DIR);
     }
+
+    g_hash_table_foreach(g_workflow_list, (GHFunc)load_events_foreach_workflow, NULL);
 
     GtkWindow *workflow_list_window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
     gtk_window_set_title(workflow_list_window, _("Workflow Configuration"));
