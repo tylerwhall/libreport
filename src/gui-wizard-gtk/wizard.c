@@ -2423,6 +2423,8 @@ static void set_auto_event_chain(GtkButton *button, gpointer user_data)
     while(wf_event_list)
     {
         g_auto_event_list = g_list_append(g_auto_event_list, xstrdup(ec_get_name(wf_event_list->data)));
+        load_single_event_config_data_from_user_storage((event_config_t *)wf_event_list->data);
+
         wf_event_list = g_list_next(wf_event_list);
     }
 
