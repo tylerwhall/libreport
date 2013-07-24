@@ -1045,13 +1045,23 @@ static event_gui_data_t *add_event_buttons(GtkBox *box,
             GtkWidget *child = gtk_bin_get_child(GTK_BIN(button));
             if (child)
             {
-                static const GdkColor red = { .red = 0xffff };
-                static const GdkColor green = { .green = 0x7fff };
-                const GdkColor *color = (green_choice ? &green : &red);
+                static const GdkRGBA red = {
+                    .red   = 1.0,
+                    .green = 0.0,
+                    .blue  = 0.0,
+                    .alpha = 1.0,
+                };
+                static const GdkRGBA green = {
+                    .red   = 0.0,
+                    .green = 0.5,
+                    .blue  = 0.0,
+                    .alpha = 1.0,
+                };
+                const GdkRGBA *color = (green_choice ? &green : &red);
                 //gtk_widget_modify_text(button, GTK_STATE_NORMAL, color);
-                gtk_widget_modify_fg(child, GTK_STATE_NORMAL, color);
-                gtk_widget_modify_fg(child, GTK_STATE_ACTIVE, color);
-                gtk_widget_modify_fg(child, GTK_STATE_PRELIGHT, color);
+                gtk_widget_override_color(child,
+                        GTK_STATE_FLAG_NORMAL | GTK_STATE_FLAG_ACTIVE | GTK_STATE_FLAG_PRELIGHT,
+                        color);
             }
         }
 
@@ -1147,7 +1157,7 @@ static void append_item_to_ls_details(gpointer name, gpointer value, gpointer da
         {
             GtkWidget *tab_lbl = gtk_label_new((char *)name);
             GtkWidget *tev = gtk_text_view_new();
-            gtk_widget_modify_font(GTK_WIDGET(tev), g_monospace_font);
+            gtk_widget_override_font(GTK_WIDGET(tev), g_monospace_font);
             load_text_to_text_view(GTK_TEXT_VIEW(tev), (char *)name);
             /* init searching */
             GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(tev));
@@ -3012,16 +3022,17 @@ static void add_pages(void)
 
     gtk_widget_set_no_show_all(GTK_WIDGET(g_spinner_event_log), true);
 
-    gtk_widget_modify_font(GTK_WIDGET(g_tv_event_log), g_monospace_font);
+    gtk_widget_override_font(GTK_WIDGET(g_tv_event_log), g_monospace_font);
     fix_all_wrapped_labels(GTK_WIDGET(g_assistant));
 
     /* Configure btn on select analyzers page */
-    GtkWidget *img_config_btn = GTK_WIDGET(gtk_builder_get_object(g_builder, "img_button_cfg1"));
+    GtkWidget *img_config_btn = gtk_image_new_from_icon_name("preferences-system", GTK_ICON_SIZE_BUTTON);
     GtkWidget *config_btn = GTK_WIDGET(gtk_builder_get_object(g_builder, "button_cfg1"));
     if (config_btn)
     {
         g_signal_connect(G_OBJECT(config_btn), "clicked", G_CALLBACK(on_show_event_list_cb), NULL);
         gtk_button_set_image(GTK_BUTTON(config_btn), img_config_btn);
+        gtk_button_set_image_position(GTK_BUTTON(config_btn), GTK_POS_RIGHT);
     }
 
     g_signal_connect(g_cb_no_comment, "toggled", G_CALLBACK(on_no_comment_toggled), NULL);
@@ -3036,9 +3047,9 @@ static void add_pages(void)
     g_signal_connect(G_OBJECT(g_ev_search_down), "button-press-event", G_CALLBACK(search_down), NULL);
 
     /* Set color of the comment evenbox */
-    GdkColor color;
-    gdk_color_parse("#CC3333", &color);
-    gtk_widget_modify_bg(GTK_WIDGET(g_eb_comment), GTK_STATE_NORMAL, &color);
+    GdkRGBA color;
+    gdk_rgba_parse(&color, "#CC3333");
+    gtk_widget_override_color(GTK_WIDGET(g_eb_comment), GTK_STATE_FLAG_NORMAL, &color);
 
     g_signal_connect(g_tv_details, "key-press-event", G_CALLBACK(on_key_press_event_in_item_list), NULL);
 }
@@ -3200,15 +3211,15 @@ void create_assistant(bool expert_mode)
     gtk_notebook_set_show_tabs(g_assistant, (g_verbose != 0 && g_expert_mode));
 
     g_btn_close = gtk_button_new_with_mnemonic(_("_Close"));
+    gtk_button_set_image(GTK_BUTTON(g_btn_close), gtk_image_new_from_icon_name("window-close", GTK_ICON_SIZE_BUTTON));
     g_btn_stop = gtk_button_new_with_mnemonic(_("_Stop"));
+    gtk_button_set_image(GTK_BUTTON(g_btn_stop), gtk_image_new_from_icon_name("process-close", GTK_ICON_SIZE_BUTTON));
     gtk_widget_set_no_show_all(g_btn_stop, true); /* else gtk_widget_hide won't work */
     g_btn_onfail = gtk_button_new_with_label(_("Upload for analysis"));
     gtk_button_set_image(GTK_BUTTON(g_btn_onfail), gtk_image_new_from_icon_name("go-up", GTK_ICON_SIZE_BUTTON));
-    gtk_button_set_image_position(GTK_BUTTON(g_btn_onfail), GTK_POS_LEFT);
     gtk_widget_set_no_show_all(g_btn_onfail, true); /* else gtk_widget_hide won't work */
     g_btn_next = gtk_button_new_with_mnemonic(_("_Forward"));
     gtk_button_set_image(GTK_BUTTON(g_btn_next), gtk_image_new_from_icon_name("go-next", GTK_ICON_SIZE_BUTTON));
-    gtk_button_set_image_position(GTK_BUTTON(g_btn_next), GTK_POS_RIGHT);
     gtk_widget_set_no_show_all(g_btn_next, true); /* else gtk_widget_hide won't work */
 
     g_box_buttons = GTK_BOX(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0));
