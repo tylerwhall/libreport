@@ -11,8 +11,11 @@ if BUILD_UREPORT
 reporters_bin +=  reporter-ureport
 endif
 
+if BUILD_RHTSUPPORT
+reporters_bin +=  reporter-rhtsupport
+endif
+
 bin_PROGRAMS = $(reporters_bin) \
-    reporter-rhtsupport \
     reporter-kerneloops \
     reporter-upload \
     reporter-mailx \
@@ -34,8 +37,11 @@ reporters_plugin_conf += bugzilla.conf \
 
 endif
 
+if BUILD_RHTSUPPORT
+reporters_plugin_conf += rhtsupport.conf
+endif
+
 dist_reportpluginsconf_DATA = $(reporters_plugin_conf) \
-    rhtsupport.conf \
     mailx.conf
 
 eventsdir = $(EVENTS_DIR)
@@ -52,10 +58,13 @@ if BUILD_UREPORT
 reporters_events += report_uReport.xml
 endif
 
+if BUILD_RHTSUPPORT
+reporters_events += report_RHTSupport.xml
+endif
+
 dist_events_DATA = $(reporters_events) \
     report_Logger.xml \
     report_Mailx.xml \
-    report_RHTSupport.xml \
     report_Kerneloops.xml \
     report_Uploader.xml \
     report_EmergencyAnalysis.xml
@@ -67,10 +76,14 @@ dist_eventsconf_DATA = $(reporters_events_conf) \
 
 eventsdefdir = $(EVENTS_DEFINITION_DIR)
 
-dist_eventsdef_DATA = \
+reporters_events_def =
+if BUILD_RHTSUPPORT
+reporters_events_def +=  rhtsupport_event.conf
+endif
+
+dist_eventsdef_DATA = $(reporters_events_def) \
     mailx_event.conf \
     print_event.conf \
-    rhtsupport_event.conf \
     uploader_event.conf \
     emergencyanalysis_event.conf
 
@@ -84,11 +97,14 @@ if BUILD_UREPORT
 reporters_extra_dist += report_uReport.xml.in
 endif
 
+if BUILD_RHTSUPPORT
+reporters_extra_dist += report_RHTSupport.xml.in
+endif
+
 EXTRA_DIST = $(reporters_extra_dist) \
     report_Logger.conf \
     report_Logger.xml.in \
     report_Mailx.xml.in \
-    report_RHTSupport.xml.in \
     report_Kerneloops.xml.in \
     report_Uploader.xml.in \
     report_EmergencyAnalysis.xml.in
@@ -120,6 +136,7 @@ reporter_bugzilla_LDADD = \
     ../lib/libreport.la
 endif
 
+if BUILD_RHTSUPPORT
 reporter_rhtsupport_SOURCES = \
     abrt_rh_support.h abrt_rh_support.c \
     reporter-rhtsupport.h \
@@ -146,6 +163,7 @@ reporter_rhtsupport_LDADD = \
     $(LIBXML_LIBS) \
     ../lib/libreport-web.la \
     ../lib/libreport.la
+endif
 
 reporter_upload_SOURCES = \
     reporter-upload.c
