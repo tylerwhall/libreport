@@ -23,7 +23,7 @@
 Summary: Generic library for reporting various problems
 Name: libreport
 Version: @@LIBREPORT_VERSION@@
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2+
 Group: System Environment/Libraries
 URL: https://fedorahosted.org/abrt/
@@ -78,12 +78,21 @@ Requires: libreport = %{version}-%{release}
 %description devel
 Development libraries and headers for libreport
 
+%if 0%{?suse_version}
+%package web0
+Provides: libreport-web = %{version}-%{release}
+%else
 %package web
+%endif
 Summary: Library providing network API for libreport
 Group: System Environment/Libraries
 Requires: libreport = %{version}-%{release}
 
+%if 0%{?suse_version}
+%description web0
+%else
 %description web
+%endif
 Library providing network API for libreport
 
 %package web-devel
@@ -142,9 +151,21 @@ Requires: %{pygobject_gtk3}
 %endif
 Provides: report-gtk = 0:0.23-1
 Obsoletes: report-gtk < 0:0.23-1
+%if 0%{?suse_version}
+Requires: libreport-gtk0 = %{version}-%{release}
+%endif
 
 %description gtk
 Applications for reporting bugs using libreport backend
+
+%if 0%{?suse_version}
+%package gtk0
+Summary: Shared library for libreport-gtk
+Group: Development/Libraries/C and C++
+
+%description gtk0
+This package contains the shared library needed for libreport-gtk.
+%endif
 
 %package gtk-devel
 Summary: Development libraries and headers for libreport
@@ -362,14 +383,22 @@ if [ $1 -eq 0 ] ; then
     gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
 
+%if 0%{?suse_version}
+%post gtk0 -p /sbin/ldconfig
+%postun gtk0 -p /sbin/ldconfig
+%endif
+
 %posttrans gtk
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
+%if 0%{?suse_version}
+%post web0 -p /sbin/ldconfig
+%postun web0 -p /sbin/ldconfig
+%else
 %post web -p /sbin/ldconfig
-
-
 %postun web -p /sbin/ldconfig
+%endif
 
 
 %files -f %{name}.lang
@@ -416,7 +445,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/pkgconfig/libreport.pc
 %dir %{_includedir}/libreport
 
+%if 0%{?suse_version}
+%files web0
+%else
 %files web
+%endif
 %defattr(-,root,root,-)
 %{_libdir}/libreport-web.so.*
 
@@ -444,11 +477,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %files gtk
 %defattr(-,root,root,-)
 %{_bindir}/report-gtk
-%{_libdir}/libreport-gtk.so.*
 %config(noreplace) %{_sysconfdir}/libreport/events.d/emergencyanalysis_event.conf
 %{_mandir}/man5/emergencyanalysis_event.conf.5.*
 %{_datadir}/%{name}/events/report_EmergencyAnalysis.xml
 %{_mandir}/man1/report-gtk.1.gz
+%if 0%{?suse_version}
+%files gtk0
+%defattr(-,root,root,-)
+%endif
+%{_libdir}/libreport-gtk.so.*
 
 %files gtk-devel
 %defattr(-,root,root,-)
@@ -584,6 +621,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Sep 23 2013 Jakub Filak <jfilak@redhat.com> 2.1.7-4
+- add separate packages for gtk and web shared libraries
+
 * Mon Sep 23 2013 Jakub Filak <jfilak@redhat.com> 2.1.7-3
 - own directory /usr/lib64/python-2.7/site-packages/(report|reportclient)
 
