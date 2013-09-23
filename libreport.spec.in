@@ -23,7 +23,7 @@
 Summary: Generic library for reporting various problems
 Name: libreport
 Version: @@LIBREPORT_VERSION@@
-Release: 1%{?dist}
+Release: 3%{?dist}
 License: GPLv2+
 Group: System Environment/Libraries
 URL: https://fedorahosted.org/abrt/
@@ -388,9 +388,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %dir %{_sysconfdir}/%{name}/
 %dir %{_sysconfdir}/%{name}/events.d/
 %dir %{_sysconfdir}/%{name}/events/
+%dir %{_sysconfdir}/%{name}/plugins/
+%dir %{_datadir}/%{name}/
 %dir %{_datadir}/%{name}/events/
 %dir %{_datadir}/%{name}/workflows/
-%dir %{_sysconfdir}/%{name}/plugins/
 
 %files devel
 %defattr(-,root,root,-)
@@ -427,8 +428,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files python
 %defattr(-,root,root,-)
-%{python_sitearch}/report/*
-%{python_sitearch}/reportclient/*
+%{python_sitearch}/report
+%{python_sitearch}/reportclient
 
 %files cli
 %defattr(-,root,root,-)
@@ -583,6 +584,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Sep 23 2013 Jakub Filak <jfilak@redhat.com> 2.1.7-3
+- own directory /usr/lib64/python-2.7/site-packages/(report|reportclient)
+
+* Mon Sep 23 2013 Jakub Filak <jfilak@redhat.com> 2.1.7-2
+- own directory /usr/share/libreport
+
 * Wed Sep 11 2013 Jakub Filak <jfilak@redhat.com> 2.1.7-1
 - Fix problem_item_format() to work properly after 2038 on x32. #691
 - Use proper json-c requirement in libreport-web.pc.
