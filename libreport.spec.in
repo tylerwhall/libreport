@@ -281,6 +281,18 @@ used to easy configure the reporting process for Red Hat sytems. Just
 install this package and you're done.
 %endif
 
+%if 0%{?suse_version}
+%package opensuse
+Summary: Default configuration for reporting bugs via openSUSE infrastructure
+Group: Applications/File
+Requires: %{name} = %{version}-%{release}
+
+%description opensuse
+Default configuration for reporting bugs via openSUSE infrastructure
+used to easy configure the reporting process for openSUSE sytems. Just
+install this package and you're done.
+%endif
+
 %if %{with bugzilla}
 %package anaconda
 Summary: Default configuration for reporting anaconda bugs
@@ -316,6 +328,9 @@ CFLAGS="%{optflags} -Werror" %configure \
         --disable-userownsdumpdir \
 %else
         --enable-doxygen-docs \
+%endif
+%if 0%{?suse_version}
+        --with-opensuse-support \
 %endif
         --disable-silent-rules
 
@@ -598,6 +613,18 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/%{name}/workflows/workflow_RHELxorg.xml
 %config(noreplace) %{_sysconfdir}/libreport/workflows.d/report_rhel.conf
 %{_mandir}/man5/report_rhel.conf.5.*
+%endif
+
+%if 0%{?suse_version}
+%files opensuse
+%defattr(-,root,root,-)
+%{_datadir}/%{name}/workflows/workflow_openSUSECCpp.xml
+%{_datadir}/%{name}/workflows/workflow_openSUSEKerneloops.xml
+%{_datadir}/%{name}/workflows/workflow_openSUSEPython.xml
+%{_datadir}/%{name}/workflows/workflow_openSUSEVmcore.xml
+%{_datadir}/%{name}/workflows/workflow_openSUSEXorg.xml
+%config(noreplace) %{_sysconfdir}/libreport/workflows.d/report_opensuse.conf
+%{_mandir}/man5/report_opensuse.conf.5.*
 %endif
 
 %if %{with bugzilla}
