@@ -57,3 +57,8 @@ src/workflows/workflow_RHELKerneloops.xml.in
 src/workflows/workflow_RHELPython.xml.in
 src/workflows/workflow_RHELvmcore.xml.in
 src/workflows/workflow_RHELxorg.xml.in
+src/workflows/workflow_openSUSECCpp.xml.in
+src/workflows/workflow_openSUSEKerneloops.xml.in
+src/workflows/workflow_openSUSEPython.xml.in
+src/workflows/workflow_openSUSEVmcore.xml.in
+src/workflows/workflow_openSUSEXorg.xml.in
