@@ -376,6 +376,15 @@ rm -f $RPM_BUILD_ROOT%{_mandir}/man5/report_rhel.conf.5
 rm -f $RPM_BUILD_ROOT/%{_datadir}/libreport/workflows/workflow_AnacondaRHEL.xml
 %endif
 
+%if 0%{?suse_version}
+rm $RPM_BUILD_ROOT/%{python_sitearch}/reportclient/debuginfo.*
+
+for f in `ls $RPM_BUILD_ROOT/%{python_sitearch}/reportclient/opensuse_debuginfo.*`
+do
+    mv $f `echo $f | sed 's/opensuse_//'`
+done
+%endif
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
