@@ -4,6 +4,10 @@ clientexec_PYTHON = \
     __init__.py \
     debuginfo.py
 
+if OPENSUSE_SUPPORT
+clientexec_PYTHON += opensuse_debuginfo.py
+endif
+
 clientexec_LTLIBRARIES = _reportclient.la
 
 _reportclient_la_SOURCES = \
