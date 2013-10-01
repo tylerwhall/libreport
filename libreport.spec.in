@@ -346,6 +346,7 @@ find $RPM_BUILD_ROOT -name '*.la' -or -name '*.a' | xargs rm -f
 mkdir -p $RPM_BUILD_ROOT/%{_initrddir}
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/%{name}/events.d/
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/%{name}/events/
+mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/%{name}/workflows.d/
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/%{name}/events/
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}/%{name}/workflows/
 
@@ -442,6 +443,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %dir %{_sysconfdir}/%{name}/events.d/
 %dir %{_sysconfdir}/%{name}/events/
 %dir %{_sysconfdir}/%{name}/plugins/
+%dir %{_sysconfdir}/%{name}/workflows.d/
 %dir %{_datadir}/%{name}/
 %dir %{_datadir}/%{name}/events/
 %dir %{_datadir}/%{name}/workflows/
