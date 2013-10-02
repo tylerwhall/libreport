@@ -6,7 +6,7 @@
     <events>
         <event>report_uReport</event>
         <event>collect_*</event>
-        <event>analyze_CCpp</event>
+        <event>analyze_LocalGDB</event>
         <event>report_Mailx</event>
         <event>post_report</event>
     </events>
