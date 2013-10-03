@@ -5,6 +5,7 @@
 %if 0%{?suse_version}
   %bcond_with bugzilla
   %bcond_with rhtsupport
+  %bcond_without opensuse
 
   %define dbus_devel dbus-1-devel
   %define nss_devel mozilla-nss-devel
@@ -13,6 +14,7 @@
 %else
   %bcond_without bugzilla
   %bcond_without rhtsupport
+  %bcond_with opensuse
 
   %define dbus_devel dbus-devel
   %define nss_devel nss-devel
@@ -281,7 +283,7 @@ used to easy configure the reporting process for Red Hat sytems. Just
 install this package and you're done.
 %endif
 
-%if 0%{?suse_version}
+%if %{with opensuse}
 %package opensuse
 Summary: Default configuration for reporting bugs via openSUSE infrastructure
 Group: Applications/File
@@ -323,14 +325,14 @@ CFLAGS="%{optflags} -Werror" %configure \
 %if %{without rhtsupport}
         --with-rhtsupport=no \
 %endif
+%if %{without opensuse}
+        --without-opensuse-support \
+%endif
 %if 0%{?rhel:%{rhel} < 7}%{?fedora:%{fedora} < 18}
         --with-defaultdumpdirmode=0640 \
         --disable-userownsdumpdir \
 %else
         --enable-doxygen-docs \
-%endif
-%if 0%{?suse_version}
-        --with-opensuse-support \
 %endif
         --disable-silent-rules
 
@@ -626,7 +628,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_mandir}/man5/report_rhel.conf.5.*
 %endif
 
-%if 0%{?suse_version}
+%if %{with opensuse}
 %files opensuse
 %defattr(-,root,root,-)
 %{_datadir}/%{name}/workflows/workflow_openSUSECCpp.xml
