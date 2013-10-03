@@ -227,8 +227,8 @@ fi dnl end NO_UREPORT
 AC_SUBST([JSON_C_PACKAGE])
 
 AC_ARG_WITH(opensuse_support,
-    AS_HELP_STRING([--with-opensuse-support],[build openSUSE specific features (default is NO)]),
-	[], [with_opensuse_support=no])
+    AS_HELP_STRING([--with-opensuse-support],[build openSUSE specific features (default is YES)]),
+	[], [with_opensuse_support=yes])
 if test "x$with_opensuse_support" = xyes; then
 AM_CONDITIONAL(OPENSUSE_SUPPORT, true)
 # enable SUSE & deps translations
