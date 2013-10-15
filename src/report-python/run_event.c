@@ -54,7 +54,7 @@ static void p_run_event_state_dealloc(PyObject *pself)
     self->post_run_callback = NULL;
     Py_XDECREF(self->logging_callback);
     self->logging_callback = NULL;
-    self->ob_type->tp_free(pself);
+    Py_TYPE(self)->tp_free(pself);
 }
 
 //static int
@@ -74,7 +74,11 @@ static int post_run_callback(const char *dump_dir_name, void *param)
     int r = 0;
     if (ret)
     {
+#if PY_MAJOR_VERSION >= 3
+        r = PyLong_AsLong(ret);
+#else
         r = PyInt_AsLong(ret);
+#endif
         Py_DECREF(ret);
     }
     // TODO: handle exceptions: if (PyErr_Occurred()) ...
@@ -158,7 +162,11 @@ static PyObject *get_logging_callback(PyObject *pself, void *unused)
 static PyObject *get_children_count(PyObject *pself, void *unused)
 {
     p_run_event_state *self = (p_run_event_state*)pself;
+#if PY_MAJOR_VERSION >= 3
+    return PyLong_FromLong(self->state ? self->state->children_count : 0);
+#else
     return PyInt_FromLong(self->state ? self->state->children_count : 0);
+#endif
 }
 
 static int set_post_run_callback(PyObject *pself, PyObject *callback, void *unused)
@@ -237,7 +245,7 @@ static PyGetSetDef p_run_event_state_getset[] = {
 };
 
 PyTypeObject p_run_event_state_type = {
-    PyObject_HEAD_INIT(NULL)
+    PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name      = "report.run_event_state",
     .tp_basicsize = sizeof(p_run_event_state),
     /* Py_TPFLAGS_BASETYPE means "can be subtyped": */

@@ -24,6 +24,10 @@
 
 PyObject *ReportError;
 
+struct module_state {
+        PyObject *error;
+};
+
 static PyMethodDef module_methods[] = {
     /* method_name, func, flags, doc_string */
     /* for include/report/dump_dir.h */
@@ -36,36 +40,59 @@ static PyMethodDef module_methods[] = {
     { "report_problem"            , p_report_problem          , METH_VARARGS },
     { NULL }
 };
+#if PY_MAJOR_VERSION >= 3
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "_pyreport",  
+        NULL,
+        sizeof(struct module_state),
+        module_methods,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+};
+
+#define INITERROR return NULL
+
+PyObject *
+PyInit__pyreport(void)
+
+#else
+#define INITERROR return
+
 
 #ifndef PyMODINIT_FUNC /* declarations for DLL import/export */
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
 init_pyreport(void)
+#endif
 {
     if (PyType_Ready(&p_problem_data_type) < 0)
     {
         printf("PyType_Ready(&p_problem_data_type) < 0\n");
-        return;
+        INITERROR;
     }
     if (PyType_Ready(&p_dump_dir_type) < 0)
     {
         printf("PyType_Ready(&p_dump_dir_type) < 0\n");
-        return;
+        INITERROR;
     }
     if (PyType_Ready(&p_run_event_state_type) < 0)
     {
         printf("PyType_Ready(&p_run_event_state_type) < 0\n");
-        return;
+        INITERROR;
     }
-
+#if PY_MAJOR_VERSION >= 3
+    PyObject *m = PyModule_Create(&moduledef);
+#else
     PyObject *m = Py_InitModule("_pyreport", module_methods);
     //m = Py_InitModule3("_pyreport", module_methods, "Python wrapper for libreport");
-    if (!m)
-    {
-        printf("m == NULL\n");
-        return;
-    }
+#endif
+    if (m == NULL)
+        INITERROR;
 
     /* init the exception object */
     ReportError = PyErr_NewException((char*) "_pyreport.error", NULL, NULL);
@@ -99,4 +126,7 @@ init_pyreport(void)
     PyModule_AddObject(m, "LIBREPORT_RUN_CLI"    , Py_BuildValue("i", LIBREPORT_RUN_CLI    ));
     PyModule_AddObject(m, "LIBREPORT_RUN_NEWT"   , Py_BuildValue("i", LIBREPORT_RUN_NEWT  ));
     PyModule_AddObject(m, "EXIT_CANCEL_BY_USER", Py_BuildValue("i", EXIT_CANCEL_BY_USER));
+#if PY_MAJOR_VERSION >= 3
+    return m;
+#endif
 }

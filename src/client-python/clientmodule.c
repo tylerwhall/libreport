@@ -20,6 +20,10 @@
 
 #include "common.h"
 
+struct module_state {
+        PyObject *error;
+};
+
 static PyMethodDef module_methods[] = {
     /* method_name, func, flags, doc_string */
     /* for include/client.h */
@@ -31,13 +35,44 @@ static PyMethodDef module_methods[] = {
     { NULL }
 };
 
+#if PY_MAJOR_VERSION >= 3
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "_reportclient",  
+        NULL,
+        sizeof(struct module_state),
+        module_methods,
+        NULL,
+        NULL,
+        NULL,
+        NULL
+};
+
+#define INITERROR return NULL
+
+PyObject *
+PyInit__reportclient(void)
+
+#else
+#define INITERROR return
+
 #ifndef PyMODINIT_FUNC /* declarations for DLL import/export */
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
 init_reportclient(void)
+#endif
 {
+#if PY_MAJOR_VERSION >= 3
+    PyObject *m = PyModule_Create(&moduledef);
+#else
     PyObject *m = Py_InitModule("_reportclient", module_methods);
-    if (!m)
-        printf("m == NULL\n");
+#endif
+    if (m == NULL)
+        INITERROR;
+
+#if PY_MAJOR_VERSION >= 3
+    return m;
+#endif
 }
