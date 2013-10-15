@@ -3,6 +3,7 @@
     debuginfos.
 """
 
+from __future__ import print_function
 import sys
 import os
 import time
@@ -84,12 +85,12 @@ def unpack_rpm(package_file_name, files, tmp_dir, destdir, keeprpm, exact_files=
     package_full_path = tmp_dir + "/" + package_file_name
     log1("Extracting %s to %s", package_full_path, destdir)
     log2("%s", files)
-    print _("Extracting cpio from {0}").format(package_full_path)
+    print(_("Extracting cpio from {0}").format(package_full_path))
     unpacked_cpio_path = tmp_dir + "/unpacked.cpio"
     try:
         unpacked_cpio = open(unpacked_cpio_path, 'wb')
-    except IOError, ex:
-        print _("Can't write to '{0}': {1}").format(unpacked_cpio_path, ex)
+    except IOError as ex:
+        print(_("Can't write to '{0}': {1}").format(unpacked_cpio_path, ex))
         return RETURN_FAILURE
 
     rpm2cpio = Popen(["rpm2cpio", package_full_path],
@@ -104,7 +105,7 @@ def unpack_rpm(package_file_name, files, tmp_dir, destdir, keeprpm, exact_files=
             os.unlink(package_full_path)
     else:
         unpacked_cpio.close()
-        print _("Can't extract package '{0}'").format(package_full_path)
+        print(_("Can't extract package '{0}'").format(package_full_path))
         return RETURN_FAILURE
 
     # close the file
@@ -112,7 +113,8 @@ def unpack_rpm(package_file_name, files, tmp_dir, destdir, keeprpm, exact_files=
     # and open it for reading
     unpacked_cpio = open(unpacked_cpio_path, 'rb')
 
-    print _("Caching files from {0} made from {1}").format("unpacked.cpio", package_file_name)
+    print(_("Caching files from {0} made from {1}").format("unpacked.cpio",
+        package_file_name))
 
     file_patterns = ""
     cpio_args = ["cpio", "-idu"]
@@ -128,10 +130,10 @@ def unpack_rpm(package_file_name, files, tmp_dir, destdir, keeprpm, exact_files=
 
     if retcode == 0:
         log1("files extracted OK")
-        #print _("Removing temporary cpio file")
+        #print(_("Removing temporary cpio file"))
         os.unlink(unpacked_cpio_path)
     else:
-        print _("Can't extract files from '{0}'").format(unpacked_cpio_path)
+        print(_("Can't extract files from '{0}'").format(unpacked_cpio_path))
         return RETURN_FAILURE
 
 def clean_up():
@@ -142,7 +144,7 @@ def clean_up():
     if TMPDIR:
         try:
             shutil.rmtree(TMPDIR)
-        except OSError, ex:
+        except OSError as ex:
             if ex.errno != errno.ENOENT:
                 error_msg(_("Can't remove '{0}': {1}").format(TMPDIR, ex))
 
@@ -188,13 +190,12 @@ class MyDownloadCallback(DownloadBaseCallback):
                     % (self.downloaded_pkgs + 1, self.total_pkgs, name, pct)
             )
             if pct == 100:
-                #print (_("Downloading (%i of %i) %s: %3u%%")
+                #print(_("Downloading (%i of %i) %s: %3u%%")
                 #        % (self.downloaded_pkgs + 1, self.total_pkgs, name, pct)
                 #)
-                print (_("Downloading ({0} of {1}) {2}: {3:3}%").format(
+                print(_("Downloading ({0} of {1}) {2}: {3:3}%").format(
                         self.downloaded_pkgs + 1, self.total_pkgs, name, pct
-                        )
-                )
+                        ))
         # but we want machine friendly output when spawned from abrt-server
         else:
             t = time.time()
@@ -202,10 +203,9 @@ class MyDownloadCallback(DownloadBaseCallback):
                 self.last_time = t
             # update only every 5 seconds
             if pct == 100 or self.last_time > t or t - self.last_time >= 5:
-                print (_("Downloading ({0} of {1}) {2}: {3:3}%").format(
+                print(_("Downloading ({0} of {1}) {2}: {3:3}%").format(
                         self.downloaded_pkgs + 1, self.total_pkgs, name, pct
-                        )
-                )
+                        ))
                 self.last_time = t
                 if pct == 100:
                     self.last_time = 0
@@ -217,8 +217,9 @@ def downloadErrorCallback(callBackObj):
     A callback function for mirror errors.
     """
 
-    print _("Problem '{0!s}' occured while downloading from mirror: '{1!s}'. Trying next one").format(
-        callBackObj.exception, callBackObj.mirror)
+    print(_("Problem '{0!s}' occured while downloading from mirror: '{1!s}'. "
+            "Trying next one").format(
+            callBackObj.exception, callBackObj.mirror))
     # explanation of the return value can be found here:
     # /usr/lib/python2.7/site-packages/urlgrabber/mirror.py
     return {'fail':0}
@@ -243,15 +244,16 @@ class DebugInfoDownload(YumBase):
         #self.conf.cache = os.geteuid() != 0
         # Setup yum (Ts, RPM db, Repo & Sack)
         # doConfigSetup() takes some time, let user know what we are doing
-        print _("Initializing yum")
+        print(_("Initializing yum"))
         try:
             # Saw this exception here:
             # cannot open Packages index using db3 - Permission denied (13)
             # yum.Errors.YumBaseError: Error: rpmdb open failed
             self.doConfigSetup()
-        except YumBaseError, ex:
+        except YumBaseError as ex:
             self.unmute_stdout()
-            print _("Error initializing yum (YumBase.doConfigSetup): '{0!s}'").format(ex)
+            print(_("Error initializing yum (YumBase.doConfigSetup): "
+                    "'{0!s}'").format(ex))
             #return 1 - can't do this in constructor
             exit(1)
         self.unmute_stdout()
@@ -274,21 +276,21 @@ class DebugInfoDownload(YumBase):
             if self.old_stdout != -1:
                 sys.stdout = self.old_stdout
             else:
-                print "ERR: unmute called without mute?"
+                print("ERR: unmute called without mute?")
 
     @ensure_abrt_uid
     def setup_tmp_dirs(self):
         if not os.path.exists(self.tmpdir):
             try:
                 os.makedirs(self.tmpdir)
-            except OSError, ex:
-                print "Can't create tmpdir: %s" % ex
+            except OSError as ex:
+                print("Can't create tmpdir: %s" % ex)
                 return RETURN_FAILURE
         if not os.path.exists(self.cachedir):
             try:
                 os.makedirs(self.cachedir)
-            except OSError, ex:
-                print "Can't create cachedir: %s" % ex
+            except OSError as ex:
+                print("Can't create cachedir: %s" % ex)
                 return RETURN_FAILURE
 
         return RETURN_OK
@@ -322,7 +324,7 @@ class DebugInfoDownload(YumBase):
 
         # make yumdownloader work as non root user
         if not self.setCacheDir():
-            print _("Error: can't make cachedir, exiting")
+            print(_("Error: can't make cachedir, exiting"))
             return RETURN_FAILURE
 
         # disable all not needed
@@ -330,11 +332,12 @@ class DebugInfoDownload(YumBase):
             try:
                 repo.close()
                 self.repos.disableRepo(repo.id)
-            except YumBaseError, ex:
-                print _("Can't disable repository '{0!s}': {1!s}").format(repo.id, str(ex))
+            except YumBaseError as ex:
+                print(_("Can't disable repository '{0!s}': {1!s}").format(
+                    repo.id, str(ex)))
 
         # This takes some time, let user know what we are doing
-        print _("Setting up yum repositories")
+        print(_("Setting up yum repositories"))
         # setting-up repos one-by-one, so we can skip the broken ones...
         # this helps when users are using 3rd party repos like rpmfusion
         # in rawhide it results in: Can't find valid base url...
@@ -349,22 +352,23 @@ class DebugInfoDownload(YumBase):
                 # which causes artifacts on output
                 try:
                     setattr(r, "_async", False)
-                except (NameError, AttributeError), ex:
-                    print ex
-                    print _("Can't disable async download, the output might contain artifacts!")
-            except YumBaseError, ex:
-                print _("Can't setup {0}: {1}, disabling").format(r.id, ex)
+                except (NameError, AttributeError) as ex:
+                    print(ex)
+                    print(_("Can't disable async download, the output might "
+                            "contain artifacts!"))
+            except YumBaseError as ex:
+                print(_("Can't setup {0}: {1}, disabling").format(r.id, ex))
                 self.repos.disableRepo(r.id)
 
         # This is somewhat "magic", it unpacks the metadata making it usable.
         # Looks like this is the moment when yum talks to remote servers,
         # which takes time (sometimes minutes), let user know why
         # we have "paused":
-        print _("Looking for needed packages in repositories")
+        print(_("Looking for needed packages in repositories"))
         try:
             self.repos.populateSack(mdtype='metadata', cacheonly=1)
-        except YumBaseError, ex:
-            print _("Error retrieving metadata: '{0!s}'").format(ex)
+        except YumBaseError as ex:
+            print(_("Error retrieving metadata: '{0!s}'").format(ex))
             #we don't want to die here, some metadata might be already retrieved
             # so there is a chance we already have what we need
             #return 1
@@ -376,8 +380,8 @@ class DebugInfoDownload(YumBase):
             # repodata/7e6632b82c91a2e88a66ad848e231f14c48259cbf3a1c3e992a77b1fc0e9d2f6-filelists.sqlite.bz2
             # from fedora-debuginfo: [Errno 256] No more mirrors to try.
             self.repos.populateSack(mdtype='filelists', cacheonly=1)
-        except YumBaseError, ex:
-            print _("Error retrieving filelists: '{0!s}'").format(ex)
+        except YumBaseError as ex:
+            print(_("Error retrieving filelists: '{0!s}'").format(ex))
             # we don't want to die here, some repos might be already processed
             # so there is a chance we already have what we need
             #return 1
@@ -413,15 +417,16 @@ class DebugInfoDownload(YumBase):
         self.repos.setMirrorFailureCallback(downloadErrorCallback)
 
         if verbose != 0 or len(not_found) != 0:
-            print _("Can't find packages for {0} debuginfo files").format(len(not_found))
+            print(_("Can't find packages for {0} debuginfo files").format(
+                    len(not_found)))
         if verbose != 0 or total_pkgs != 0:
-            print _("Packages to download: {0}").format(total_pkgs)
-            question = _("Downloading {0:.2f}Mb, installed size: {1:.2f}Mb. Continue?").format(
+            print(_("Packages to download: {0}").format(total_pkgs))
+            question = _("Downloading {0:.2f}Mb, installed size: {1:.2f}Mb.Continue?").format(
                          todownload_size / (1024*1024),
                          installed_size / (1024*1024)
                         )
             if self.noninteractive == False and not ask_yes_no(question):
-                print _("Download cancelled by user")
+                print(_("Download cancelled by user"))
                 return RETURN_CANCEL_BY_USER
             # set up tmp and cache dirs so that we can check free space in both
             retval = self.setup_tmp_dirs()
@@ -435,7 +440,7 @@ class DebugInfoDownload(YumBase):
                              " ({1:.2f}Mb left). Continue?").format(
                     self.tmpdir, tmp_space)
                 if not self.noninteractive and not ask_yes_no(question):
-                    print _("Download cancelled by user")
+                    print(_("Download cancelled by user"))
                     return RETURN_CANCEL_BY_USER
             res = os.statvfs(self.cachedir)
             cache_space = float(res.f_bsize * res.f_bavail) / (1024*1024)
@@ -444,7 +449,7 @@ class DebugInfoDownload(YumBase):
                              "'{0}' ({1:.2f}Mb left). Continue?").format(
                     self.cachedir, cache_space)
                 if not self.noninteractive and not ask_yes_no(question):
-                    print _("Download cancelled by user")
+                    print(_("Download cancelled by user"))
                     return RETURN_CANCEL_BY_USER
 
         for pkg, files in package_files_dict.iteritems():
@@ -465,8 +470,8 @@ class DebugInfoDownload(YumBase):
                 log2("copying from local repo: %s", remote)
                 try:
                     shutil.copy(pkg_path, self.tmpdir)
-                except OSError, ex:
-                    print _("Cannot copy file '{0}': {1}").format(pkg_path, ex)
+                except OSError as ex:
+                    print(_("Cannot copy file '{0}': {1}").format(pkg_path, ex))
                     continue
             else:
                 # pkg is in a remote repo, we need to download it to tmpdir
@@ -484,13 +489,13 @@ class DebugInfoDownload(YumBase):
                     os.unlink(self.tmpdir + "/" + package_file_name)
                 except OSError:
                     pass
-                print (_("Downloading package {0} failed").format(pkg))
+                print((_("Downloading package {0} failed").format(pkg)))
             else:
                 unpack_result = unpack_rpm(package_file_name, files, self.tmpdir,
                                            self.cachedir, self.keeprpms, exact_files=download_exact_files)
                 if unpack_result == RETURN_FAILURE:
                     # recursively delete the temp dir on failure
-                    print _("Unpacking failed, aborting download...")
+                    print(_("Unpacking failed, aborting download..."))
                     self.cleanup_tmp_dir()
                     return RETURN_FAILURE
 
@@ -500,7 +505,7 @@ class DebugInfoDownload(YumBase):
             # Was: "All downloaded packages have been extracted, removing..."
             # but it was appearing even if no packages were in fact extracted
             # (say, when there was one package, and it has download error).
-            print (_("Removing {0}").format(self.tmpdir))
+            print(_("Removing {0}").format(self.tmpdir))
             try:
                 os.rmdir(self.tmpdir)
             except OSError:
