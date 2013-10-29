@@ -23,7 +23,7 @@ _reportclient_la_CPPFLAGS = \
 _reportclient_la_LDFLAGS = \
     -module \
     -avoid-version \
-    -export-symbols-regex init_reportclient \
+    -export-symbols-regex *_reportclient \
     -Wl,-z,relro -Wl,-z,now
 _reportclient_la_LIBADD = \
     ../lib/libreport.la

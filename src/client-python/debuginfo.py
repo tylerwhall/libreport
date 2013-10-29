@@ -11,9 +11,9 @@ import errno
 import shutil
 from subprocess import Popen
 
-#from yum import _, YumBase
-#from yum.callbacks import DownloadBaseCallback
-#from yum.Errors import YumBaseError
+from yum import _, YumBase
+from yum.callbacks import DownloadBaseCallback
+from yum.Errors import YumBaseError
 
 from reportclient import (_, log1, log2, RETURN_OK, RETURN_FAILURE,
                           RETURN_CANCEL_BY_USER, verbose, ask_yes_no,

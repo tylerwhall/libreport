@@ -28,7 +28,7 @@ _pyreport_la_CPPFLAGS = \
 _pyreport_la_LDFLAGS = \
     -module \
     -avoid-version \
-    -export-symbols-regex init_pyreport \
+    -export-symbols-regex *_pyreport \
     -Wl,-z,relro -Wl,-z,now
 _pyreport_la_LIBADD = \
     ../lib/libreport.la
