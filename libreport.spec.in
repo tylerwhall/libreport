@@ -261,10 +261,9 @@ Summary: Default configuration for reporting anaconda bugs
 Group: Applications/File
 Requires: %{name} = %{version}-%{release}
 Requires: libreport-plugin-reportuploader = %{version}-%{release}
+Requires: libreport-plugin-bugzilla = %{version}-%{release}
 %if 0%{?rhel}
 Requires: libreport-plugin-rhtsupport = %{version}-%{release}
-%else
-Requires: libreport-plugin-bugzilla = %{version}-%{release}
 %endif
 
 %description anaconda
@@ -330,6 +329,7 @@ rm -f $RPM_BUILD_ROOT/%{_datadir}/libreport/workflows/workflow_RHELxorg.xml
 rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/libreport/workflows.d/report_rhel.conf
 rm -f $RPM_BUILD_ROOT%{_mandir}/man5/report_rhel.conf.5
 rm -f $RPM_BUILD_ROOT/%{_datadir}/libreport/workflows/workflow_AnacondaRHEL.xml
+rm -f $RPM_BUILD_ROOT/%{_datadir}/libreport/workflows/workflow_AnacondaRHELBugzilla.xml
 %endif
 
 %clean
@@ -560,6 +560,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 %if 0%{?rhel}
 %{_datadir}/%{name}/workflows/workflow_AnacondaRHEL.xml
+%{_datadir}/%{name}/workflows/workflow_AnacondaRHELBugzilla.xml
 %endif
 %{_datadir}/%{name}/workflows/workflow_AnacondaUpload.xml
 %config(noreplace) %{_sysconfdir}/libreport/workflows.d/anaconda_event.conf
