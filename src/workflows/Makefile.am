@@ -17,6 +17,7 @@ if BUILD_BUGZILLA
 dist_workflows_DATA += \
     workflow_AnacondaFedora.xml \
     workflow_AnacondaRHEL.xml \
+    workflow_AnacondaRHELBugzilla.xml \
     workflow_AnacondaUpload.xml
 endif
 
@@ -50,5 +51,6 @@ if BUILD_BUGZILLA
 EXTRA_DIST += \
     workflow_AnacondaFedora.xml.in \
     workflow_AnacondaRHEL.xml.in \
+    workflow_AnacondaRHELBugzilla.xml.in \
     workflow_AnacondaUpload.xml.in
 endif
